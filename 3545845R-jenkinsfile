@@ -17,17 +17,15 @@ node {
         parallel(
             'ST4A-3545845R': {
                 node {
-                    stage('Unit Tests') {
-                        echo "Running unit tests"
-                        // Your unit test commands here
+                    stage('XSS check') {
+                        echo "ST4A-3545845R - SQLI check completed"
                     }
                 }
             },
             'ST4B-3545845R': {
                 node {
-                    stage('Integration Tests') {
-                        echo "Running integration tests"
-                        // Your integration test commands here
+                    stage('SQLI check') {
+                        echo "ST4B-3545845R - XSS check completed"
                     }
                 }
             }
@@ -36,7 +34,7 @@ node {
     stage('ST5-3545845R') {
         def proceed = input(
             id: 'Proceed1', 
-            message: 'Approve deployment?', 
+            message: 'Continue the pipeline?', 
             parameters: [
                 choice(
                     choices: ['Proceed', 'Abort'],
@@ -49,8 +47,11 @@ node {
         if (proceed == 'Abort') {
             error("Deployment was rejected by user")
         }
+        else {
+            sh 'ST5-3545845R : Continue the pipeline.'
+        }
     }
     stage('ST-6-3545845R') {
-        sh 'echo this should succeed only if deployment is approved'
+        sh 'ST6-3545845R : Ready for next phase.'
     }
 }
