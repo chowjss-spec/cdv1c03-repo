@@ -1,0 +1,56 @@
+node {
+    stage('ST1-3545845R') {
+        sh 'echo ST1-3545845R: Setup Release Environment Completed.'
+    }
+    stage('ST2-3545845R') {
+        sh 'docker --version'
+        sh 'docker ps -a --filter "name=svr-3545845r" --format "{{.ID}}" | xargs -r docker rm -f'
+        sh 'docker run -d -p 32700:80 -v ./html:/var/www/html --name svr-3545845r svr-image-3545845r'
+        sh 'echo ST2-3545845R: Server1 is successfully created'
+    }
+    stage('ST3-3545845R') {
+        sh 'docker --version'
+        sh 'echo ST3-3545845R: Server1 is healthy - Health check done'
+    }
+    stage('ST4-3545845R') {
+        sh 'echo S4-Parallel-3545845R: Security Scrutinises'
+        parallel(
+            'ST4A-3545845R': {
+                node {
+                    stage('Unit Tests') {
+                        echo "Running unit tests"
+                        // Your unit test commands here
+                    }
+                }
+            },
+            'ST4B-3545845R': {
+                node {
+                    stage('Integration Tests') {
+                        echo "Running integration tests"
+                        // Your integration test commands here
+                    }
+                }
+            }
+        )
+    }
+    stage('ST5-3545845R') {
+        def proceed = input(
+            id: 'Proceed1', 
+            message: 'Approve deployment?', 
+            parameters: [
+                choice(
+                    choices: ['Proceed', 'Abort'],
+                    description: 'Approve or reject the deployment',
+                    name: 'decision'
+                )
+            ]
+        )
+        
+        if (proceed == 'Abort') {
+            error("Deployment was rejected by user")
+        }
+    }
+    stage('ST-6-3545845R') {
+        sh 'echo this should succeed only if deployment is approved'
+    }
+}
