@@ -48,10 +48,10 @@ node {
             error("Deployment was rejected by user")
         }
         else {
-            sh 'ST5-3545845R : Continue the pipeline.'
+            sh 'echo ST5-3545845R : Continue the pipeline.'
         }
     }
     stage('ST-6-3545845R') {
-        sh 'ST6-3545845R : Ready for next phase.'
+        sh 'echo ST6-3545845R : Ready for next phase.'
     }
 }
